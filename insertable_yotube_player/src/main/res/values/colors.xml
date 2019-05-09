@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="my_youtube_player_msg_animation_start">#C7C7C7</color>
+    <color name="my_youtube_player_msg_animation_end">@android:color/white</color>
+</resources>
