@@ -1,2 +1,2 @@
 # insertable-youtube-player
-Библиотека на основе PierfrancescoSoffritti/android-youtube-player
+Обёртка над PierfrancescoSoffritti/android-youtube-player, созданная для удобства использования в моём проекте.
