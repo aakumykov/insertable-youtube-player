@@ -16,6 +16,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
@@ -63,10 +64,10 @@ public class InsertableYoutubePlayer implements
     public InsertableYoutubePlayer(
             @NonNull Context context,
             @NonNull ViewGroup targetContainer,
-            int waitingMessageId,
-            int playIconId,
-            int pauseIconId,
-            int waitIconId
+            @NonNull Integer waitingMessageId,
+            @Nullable Integer playIconId,
+            @Nullable Integer pauseIconId,
+            @Nullable Integer waitIconId
     )
     {
         Log.d(TAG, "MyYoutubePlayer");
@@ -74,13 +75,30 @@ public class InsertableYoutubePlayer implements
         this.context = context;
         this.targetContainer = targetContainer;
         this.waitingMessageId = waitingMessageId;
-        this.playIconId = playIconId;
-        this.pauseIconId = pauseIconId;
-        this.waitIconId = waitIconId;
+
+        this.playIconId = (null == playIconId) ? R.drawable.ic_player_play : playIconId;
+        this.pauseIconId = (null == pauseIconId) ? R.drawable.ic_player_pause : pauseIconId;
+        this.waitIconId = (null == waitIconId) ? R.drawable.ic_player_wait : waitIconId;
 
         preparePlayerLayout();
 
         preparePlayer();
+    }
+
+    public InsertableYoutubePlayer(
+            @NonNull Context context,
+            @NonNull ViewGroup targetContainer,
+            int waitingMessageId
+    )
+    {
+        new InsertableYoutubePlayer(
+                context,
+                targetContainer,
+                waitingMessageId,
+                null,
+                null,
+                null
+        );
     }
 
 
