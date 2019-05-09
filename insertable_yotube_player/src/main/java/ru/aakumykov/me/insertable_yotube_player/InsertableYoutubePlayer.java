@@ -85,22 +85,22 @@ public class InsertableYoutubePlayer implements
         preparePlayer();
     }
 
+
     public InsertableYoutubePlayer(
             @NonNull Context context,
             @NonNull ViewGroup targetContainer,
             int waitingMessageId
     )
     {
-        new InsertableYoutubePlayer(
-                context,
-                targetContainer,
-                waitingMessageId,
-                null,
-                null,
-                null
+        this(
+            context,
+            targetContainer,
+            waitingMessageId,
+            null,
+            null,
+            null
         );
     }
-
 
     @Override
     public void onClick(View v) {
