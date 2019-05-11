@@ -285,6 +285,8 @@ public class InsertableYoutubePlayer implements
 
                 }
             });
+
+            youTubePlayerView.enableBackgroundPlayback(true);
         }
 
         playerControlButton.setOnClickListener(this);
