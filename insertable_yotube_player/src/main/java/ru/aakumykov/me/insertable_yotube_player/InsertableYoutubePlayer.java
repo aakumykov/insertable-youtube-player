@@ -114,17 +114,26 @@ public class InsertableYoutubePlayer implements
 
     // Внешние методы
     public void show(String videoId, PlayerType playerType) {
+        show(videoId, null, playerType);
+    }
+
+    public void show(String videoId, @Nullable Float timecode, PlayerType playerType) {
         this.videoId = videoId;
         this.playerType = playerType;
 
         if (null != youTubePlayer) {
-            youTubePlayer.cueVideo(videoId, 0.0f);
+            if (null == timecode)
+                timecode = 0.0f;
+
+            youTubePlayer.cueVideo(videoId, timecode);
 
             switch (playerType) {
+
                 case AUDIO_PLAYER:
                     Utils.hide(youTubePlayerView);
                     Utils.show(audioPlayer);
                     break;
+
                 case VIDEO_PLAYER:
                     Utils.hide(audioPlayer);
                     Utils.show(youTubePlayerView);
