@@ -144,7 +144,8 @@ public class InsertableYoutubePlayer implements
     }
 
     public void show(String videoId, @Nullable Float timecode, PlayerType playerType, ShowCallbacks callbacks) {
-
+        this.showCallbacks = callbacks;
+        show(videoId, timecode, playerType);
     }
 
     public void remove() {
