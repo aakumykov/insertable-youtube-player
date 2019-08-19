@@ -125,7 +125,7 @@ public class InsertableYoutubePlayer implements
 
         if (null != youTubePlayer) {
 
-            youTubePlayer.cueVideo(videoId, timecode);
+            youTubePlayer.cueVideo(videoId, this.timecode);
 
             switch (playerType) {
 
