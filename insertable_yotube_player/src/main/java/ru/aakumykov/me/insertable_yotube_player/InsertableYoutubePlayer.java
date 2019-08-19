@@ -58,6 +58,7 @@ public class InsertableYoutubePlayer implements
 
     private float videoDuration = 0f;
     private String videoId;
+    private Float timecode;
     private PlayerConstants.PlayerState mediaPlayerState;
 
 
@@ -119,11 +120,10 @@ public class InsertableYoutubePlayer implements
 
     public void show(String videoId, @Nullable Float timecode, PlayerType playerType) {
         this.videoId = videoId;
+        this.timecode = (null == timecode) ? 0.0f : timecode;
         this.playerType = playerType;
 
         if (null != youTubePlayer) {
-            if (null == timecode)
-                timecode = 0.0f;
 
             youTubePlayer.cueVideo(videoId, timecode);
 
