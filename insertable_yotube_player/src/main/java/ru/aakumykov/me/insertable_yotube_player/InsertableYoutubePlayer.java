@@ -53,13 +53,13 @@ public class InsertableYoutubePlayer implements
     private SeekBar playerSeekBar;
     private TextView playerStatusBar;
 
-    private YouTubePlayerView youTubePlayerView;
-    private YouTubePlayer youTubePlayer;
+    private YouTubePlayerView mYouTubePlayerView;
+    private YouTubePlayer mYouTubePlayer;
+    private PlayerConstants.PlayerState mMediaPlayerState;
 
-    private float videoDuration = 0f;
-    private String videoId;
-    private Float timecode;
-    private PlayerConstants.PlayerState mediaPlayerState;
+    private float mVideoDuration = 0f;
+    private String mVideoId;
+    private Float mTimecode;
 
 
     public InsertableYoutubePlayer(
@@ -113,73 +113,68 @@ public class InsertableYoutubePlayer implements
     }
 
 
-    // Внешние методы
-    public void show(String videoId, PlayerType playerType) {
-        show(videoId, null, playerType);
-    }
-
     public void show(String videoId, @Nullable Float timecode, PlayerType playerType) {
-        this.videoId = videoId;
-        this.timecode = (null == timecode) ? 0.0f : timecode;
+        this.mVideoId = videoId;
+        this.mTimecode = (null == timecode) ? 0.0f : timecode;
         this.playerType = playerType;
 
-        if (null != youTubePlayer) {
+        if (null != mYouTubePlayer) {
 
-            youTubePlayer.cueVideo(videoId, this.timecode);
+            mYouTubePlayer.cueVideo(videoId, this.mTimecode);
 
             switch (playerType) {
 
                 case AUDIO_PLAYER:
-                    Utils.hide(youTubePlayerView);
+                    Utils.hide(mYouTubePlayerView);
                     Utils.show(audioPlayer);
                     break;
 
                 case VIDEO_PLAYER:
                     Utils.hide(audioPlayer);
-                    Utils.show(youTubePlayerView);
+                    Utils.show(mYouTubePlayerView);
                     break;
             }
         }
     }
 
     public void remove() {
-        videoId = null;
+        mVideoId = null;
 
-        if (null != youTubePlayer)
-            youTubePlayer.pause();
+        if (null != mYouTubePlayer)
+            mYouTubePlayer.pause();
 
         hidePlayerMsg();
-        Utils.hide(youTubePlayerView);
+        Utils.hide(mYouTubePlayerView);
         Utils.hide(audioPlayer);
     }
 
     public void pause() {
-        if (null != youTubePlayer)
-            youTubePlayer.pause();
+        if (null != mYouTubePlayer)
+            mYouTubePlayer.pause();
     }
 
     public void play() {
-        if (null != youTubePlayer)
-            youTubePlayer.play();
+        if (null != mYouTubePlayer)
+            mYouTubePlayer.play();
     }
 
     public void release() {
-        if (null != youTubePlayerView) {
-            Utils.hide(youTubePlayerView);
+        if (null != mYouTubePlayerView) {
+            Utils.hide(mYouTubePlayerView);
             Utils.hide(audioPlayer);
-            youTubePlayerView.release();
+            mYouTubePlayerView.release();
         }
     }
 
     public void convert2video() {
         playerType = PlayerType.VIDEO_PLAYER;
-        Utils.show(youTubePlayerView);
+        Utils.show(mYouTubePlayerView);
         Utils.hide(audioPlayer);
     }
 
     public void convert2audio() {
         playerType = PlayerType.AUDIO_PLAYER;
-        Utils.hide(youTubePlayerView);
+        Utils.hide(mYouTubePlayerView);
         Utils.show(audioPlayer);
     }
 
@@ -188,11 +183,11 @@ public class InsertableYoutubePlayer implements
     }
 
     public boolean hasMedia() {
-        return !TextUtils.isEmpty(videoId);
+        return !TextUtils.isEmpty(mVideoId);
     }
 
     public boolean wasPlay() {
-        return PlayerConstants.PlayerState.PLAYING.equals(mediaPlayerState);
+        return PlayerConstants.PlayerState.PLAYING.equals(mMediaPlayerState);
     }
 
     public boolean isAudioPlayer() {
@@ -211,7 +206,7 @@ public class InsertableYoutubePlayer implements
         LinearLayout player_layout = (LinearLayout) layoutInflater.inflate(R.layout.insertable_youtube_player, null);
         playerMsg = player_layout.findViewById(R.id.playerMsg);
 
-        youTubePlayerView = player_layout.findViewById(R.id.youTubePlayerView);
+        mYouTubePlayerView = player_layout.findViewById(R.id.youTubePlayerView);
 
         audioPlayer = player_layout.findViewById(R.id.audioPlayer);
         playerControlButton = player_layout.findViewById(R.id.playerControlButton);
@@ -232,26 +227,26 @@ public class InsertableYoutubePlayer implements
 
         showPlayerMsg(waitingMessageId, true);
 
-        if (null == youTubePlayer) {
+        if (null == mYouTubePlayer) {
 
-            youTubePlayerView.initialize(new YouTubePlayerListener() {
+            mYouTubePlayerView.initialize(new YouTubePlayerListener() {
 
                 @Override
                 public void onReady(@NonNull YouTubePlayer youTubePlayer) {
-                    InsertableYoutubePlayer.this.youTubePlayer = youTubePlayer;
+                    InsertableYoutubePlayer.this.mYouTubePlayer = youTubePlayer;
 
                     hidePlayerMsg();
 
-                    if (null != videoId)
-                        show(videoId, playerType);
+                    if (null != mVideoId)
+                        show(mVideoId, mTimecode, playerType);
                 }
 
                 @Override
                 public void onStateChange(@NonNull YouTubePlayer youTubePlayer, @NonNull PlayerConstants.PlayerState playerState) {
-                    mediaPlayerState = playerState;
+                    mMediaPlayerState = playerState;
                     //showPlayerMsg(state);
                     if (isAudioPlayer())
-                        changePlayerControls(mediaPlayerState);
+                        changePlayerControls(mMediaPlayerState);
                 }
 
                 @Override
@@ -276,7 +271,7 @@ public class InsertableYoutubePlayer implements
 
                 @Override
                 public void onVideoDuration(@NonNull YouTubePlayer youTubePlayer, float v) {
-                    videoDuration = v;
+                    mVideoDuration = v;
                 }
 
                 @Override
@@ -295,7 +290,7 @@ public class InsertableYoutubePlayer implements
                 }
             });
 
-            youTubePlayerView.enableBackgroundPlayback(true);
+            mYouTubePlayerView.enableBackgroundPlayback(true);
         }
 
         playerControlButton.setOnClickListener(this);
@@ -308,10 +303,10 @@ public class InsertableYoutubePlayer implements
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
-                    float newPosition = videoDuration * progress / 100;
-                    if (null != youTubePlayer) {
-                        youTubePlayer.seekTo(newPosition);
-                        youTubePlayer.play();
+                    float newPosition = mVideoDuration * progress / 100;
+                    if (null != mYouTubePlayer) {
+                        mYouTubePlayer.seekTo(newPosition);
+                        mYouTubePlayer.play();
 //                        youTubePlayer.loadVideo(videoId, newPosition);
                     }
                 }
@@ -330,7 +325,7 @@ public class InsertableYoutubePlayer implements
     }
 
     private void moveSeekBar(float currentPosition) {
-        int progress = Math.round((currentPosition / videoDuration) * 100);
+        int progress = Math.round((currentPosition / mVideoDuration) * 100);
         playerSeekBar.setProgress(progress);
         playerStatusBar.setText(TimeUtilities.formatTime(currentPosition));
     }
@@ -387,10 +382,10 @@ public class InsertableYoutubePlayer implements
     }
 
     private void playPauseMedia() {
-        if (PlayerConstants.PlayerState.PLAYING.equals(this.mediaPlayerState)) {
-            youTubePlayer.pause();
+        if (PlayerConstants.PlayerState.PLAYING.equals(this.mMediaPlayerState)) {
+            mYouTubePlayer.pause();
         } else {
-            youTubePlayer.play();
+            mYouTubePlayer.play();
         }
     }
 
