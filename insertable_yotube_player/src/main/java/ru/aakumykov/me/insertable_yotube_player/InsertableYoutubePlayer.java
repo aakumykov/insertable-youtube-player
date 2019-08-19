@@ -33,6 +33,11 @@ public class InsertableYoutubePlayer implements
         void onMediaAdded();
     }
 
+    public interface ShowCallbacks {
+        void onVideoShown();
+        void onVideoShowError(String errorMsg);
+    }
+
     public enum PlayerType {
         VIDEO_PLAYER, AUDIO_PLAYER
     }
@@ -56,6 +61,7 @@ public class InsertableYoutubePlayer implements
     private YouTubePlayerView mYouTubePlayerView;
     private YouTubePlayer mYouTubePlayer;
     private PlayerConstants.PlayerState mMediaPlayerState;
+    private ShowCallbacks showCallbacks;
 
     private float mVideoDuration = 0f;
     private String mVideoId;
@@ -135,6 +141,10 @@ public class InsertableYoutubePlayer implements
                     break;
             }
         }
+    }
+
+    public void show(String videoId, @Nullable Float timecode, PlayerType playerType, ShowCallbacks callbacks) {
+
     }
 
     public void remove() {
@@ -237,8 +247,10 @@ public class InsertableYoutubePlayer implements
 
                     hidePlayerMsg();
 
-                    if (null != mVideoId)
+                    if (null != mVideoId) {
                         show(mVideoId, mTimecode, playerType);
+                        showCallbacks.onVideoShown();
+                    }
                 }
 
                 @Override
@@ -262,6 +274,7 @@ public class InsertableYoutubePlayer implements
                 @Override
                 public void onError(@NonNull YouTubePlayer youTubePlayer, @NonNull PlayerConstants.PlayerError playerError) {
                     showPlayerMsg(String.valueOf(playerError), false);
+                    showCallbacks.onVideoShowError(playerError.toString());
                 }
 
                 @Override
