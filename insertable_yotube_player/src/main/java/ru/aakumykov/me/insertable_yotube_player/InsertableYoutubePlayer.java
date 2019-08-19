@@ -249,7 +249,8 @@ public class InsertableYoutubePlayer implements
 
                     if (null != mVideoId) {
                         show(mVideoId, mTimecode, playerType);
-                        showCallbacks.onVideoShown();
+                        if (null != showCallbacks)
+                            showCallbacks.onVideoShown();
                     }
                 }
 
@@ -274,7 +275,8 @@ public class InsertableYoutubePlayer implements
                 @Override
                 public void onError(@NonNull YouTubePlayer youTubePlayer, @NonNull PlayerConstants.PlayerError playerError) {
                     showPlayerMsg(String.valueOf(playerError), false);
-                    showCallbacks.onVideoShowError(playerError.toString());
+                    if (null != showCallbacks)
+                        showCallbacks.onVideoShowError(playerError.toString());
                 }
 
                 @Override
