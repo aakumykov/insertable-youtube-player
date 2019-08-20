@@ -38,6 +38,11 @@ public class InsertableYoutubePlayer implements
         void onVideoShowError(String errorMsg);
     }
 
+    public interface SeekCallbacks {
+        void onSeekComplete(float timeCode);
+    }
+
+
     public enum PlayerType {
         VIDEO_PLAYER, AUDIO_PLAYER
     }
@@ -63,9 +68,12 @@ public class InsertableYoutubePlayer implements
     private PlayerConstants.PlayerState mMediaPlayerState;
     private ShowCallbacks showCallbacks;
 
-    private float mVideoDuration = 0.0f;
     private String mVideoId;
     private Float mTimecode;
+
+    private float mVideoDuration = 0.0f;
+    private boolean mSeekRequested = false;
+    private SeekCallbacks mSeekCallbacks;
 
 
     public InsertableYoutubePlayer(
@@ -210,10 +218,15 @@ public class InsertableYoutubePlayer implements
     }
 
     public void seekTo(int decimalPositionPercent) {
-        float position = mVideoDuration * decimalPositionPercent / 100;
+        seekTo(decimalPositionPercent, null);
+    }
+
+    public void seekTo(int decimalPositionPercent, @Nullable SeekCallbacks callbacks) {
+        mSeekRequested = true;
+        mSeekCallbacks = callbacks;
 
         if (null != mYouTubePlayer)
-            mYouTubePlayer.seekTo(position);
+            mYouTubePlayer.seekTo(mVideoDuration * decimalPositionPercent / 100);
     }
 
     public float getDuration() {
@@ -299,6 +312,13 @@ public class InsertableYoutubePlayer implements
                 @Override
                 public void onVideoDuration(@NonNull YouTubePlayer youTubePlayer, float v) {
                     mVideoDuration = v;
+
+                    if (mSeekRequested) {
+                        mSeekRequested = false;
+
+                        if (null != mSeekCallbacks)
+                            mSeekCallbacks.onSeekComplete(v);
+                    }
                 }
 
                 @Override
