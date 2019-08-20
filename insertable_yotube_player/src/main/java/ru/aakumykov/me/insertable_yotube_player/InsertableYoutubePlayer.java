@@ -63,7 +63,7 @@ public class InsertableYoutubePlayer implements
     private PlayerConstants.PlayerState mMediaPlayerState;
     private ShowCallbacks showCallbacks;
 
-    private float mVideoDuration = 0f;
+    private float mVideoDuration = 0.0f;
     private String mVideoId;
     private Float mTimecode;
 
@@ -207,6 +207,15 @@ public class InsertableYoutubePlayer implements
 
     public boolean isVideoPlayer() {
         return PlayerType.VIDEO_PLAYER.equals(playerType);
+    }
+
+    public void seekTo(Float time) {
+        if (null != mYouTubePlayer)
+            mYouTubePlayer.seekTo(time);
+    }
+
+    public float getDuration() {
+        return this.mVideoDuration;
     }
 
 
