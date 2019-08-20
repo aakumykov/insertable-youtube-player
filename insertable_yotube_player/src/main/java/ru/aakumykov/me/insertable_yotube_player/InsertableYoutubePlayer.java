@@ -33,15 +33,11 @@ public class InsertableYoutubePlayer implements
         void onMediaAdded();
     }
 
-    public interface ShowCallbacks {
-        void onVideoShown();
-        void onVideoShowError(String errorMsg);
+    public interface PlayerCallbacks {
+        void onReady();
+        void onError(String errorMsg);
+        void onSeek(float timecode);
     }
-
-    public interface SeekCallbacks {
-        void onSeekComplete(float timeCode);
-    }
-
 
     public enum PlayerType {
         VIDEO_PLAYER, AUDIO_PLAYER
@@ -66,14 +62,14 @@ public class InsertableYoutubePlayer implements
     private YouTubePlayerView mYouTubePlayerView;
     private YouTubePlayer mYouTubePlayer;
     private PlayerConstants.PlayerState mMediaPlayerState;
-    private ShowCallbacks showCallbacks;
+    private PlayerCallbacks playerCallbacks;
 
     private String mVideoId;
     private Float mTimecode;
 
     private float mVideoDuration = 0.0f;
     private boolean mSeekRequested = false;
-    private SeekCallbacks mSeekCallbacks;
+    private PlayerCallbacks mPlayerCallbacks;
 
 
     public InsertableYoutubePlayer(
@@ -127,6 +123,12 @@ public class InsertableYoutubePlayer implements
     }
 
 
+    public void show(String videoId, @Nullable Float timecode, PlayerType playerType, PlayerCallbacks callbacks) {
+        this.playerCallbacks = callbacks;
+
+        show(videoId, timecode, playerType);
+    }
+
     public void show(String videoId, @Nullable Float timecode, PlayerType playerType) {
         this.mVideoId = videoId;
         this.mTimecode = (null == timecode) ? 0.0f : timecode;
@@ -149,11 +151,6 @@ public class InsertableYoutubePlayer implements
                     break;
             }
         }
-    }
-
-    public void show(String videoId, @Nullable Float timecode, PlayerType playerType, ShowCallbacks callbacks) {
-        this.showCallbacks = callbacks;
-        show(videoId, timecode, playerType);
     }
 
     public void remove() {
@@ -218,13 +215,7 @@ public class InsertableYoutubePlayer implements
     }
 
     public void seekTo(int decimalPositionPercent) {
-        seekTo(decimalPositionPercent, null);
-    }
-
-    public void seekTo(int decimalPositionPercent, @Nullable SeekCallbacks callbacks) {
         mSeekRequested = true;
-        mSeekCallbacks = callbacks;
-
         if (null != mYouTubePlayer)
             mYouTubePlayer.seekTo(mVideoDuration * decimalPositionPercent / 100);
     }
@@ -274,15 +265,14 @@ public class InsertableYoutubePlayer implements
 
                     if (null != mVideoId) {
                         show(mVideoId, mTimecode, playerType);
-                        if (null != showCallbacks)
-                            showCallbacks.onVideoShown();
+                        if (null != playerCallbacks)
+                            playerCallbacks.onReady();
                     }
                 }
 
                 @Override
                 public void onStateChange(@NonNull YouTubePlayer youTubePlayer, @NonNull PlayerConstants.PlayerState playerState) {
                     mMediaPlayerState = playerState;
-                    //showPlayerMsg(state);
                     if (isAudioPlayer())
                         changePlayerControls(mMediaPlayerState);
                 }
@@ -300,8 +290,8 @@ public class InsertableYoutubePlayer implements
                 @Override
                 public void onError(@NonNull YouTubePlayer youTubePlayer, @NonNull PlayerConstants.PlayerError playerError) {
                     showPlayerMsg(String.valueOf(playerError), false);
-                    if (null != showCallbacks)
-                        showCallbacks.onVideoShowError(playerError.toString());
+                    if (null != playerCallbacks)
+                        playerCallbacks.onError(playerError.toString());
                 }
 
                 @Override
@@ -315,9 +305,8 @@ public class InsertableYoutubePlayer implements
 
                     if (mSeekRequested) {
                         mSeekRequested = false;
-
-                        if (null != mSeekCallbacks)
-                            mSeekCallbacks.onSeekComplete(v);
+                        if (null != mPlayerCallbacks)
+                            mPlayerCallbacks.onSeek(v);
                     }
                 }
 
