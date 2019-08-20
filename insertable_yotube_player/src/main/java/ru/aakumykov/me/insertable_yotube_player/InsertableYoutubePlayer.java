@@ -45,13 +45,14 @@ public class InsertableYoutubePlayer implements
 
 
     private final static String TAG = "MyYoutubePlayer";
+
+    private Context context;
+    private ViewGroup targetContainer;
     private PlayerType playerType;
     private int waitingMessageId;
     private int playIconId;
     private int pauseIconId;
     private int waitIconId;
-    private Context context;
-    private ViewGroup targetContainer;
 
     private TextView playerMsg;
     private ConstraintLayout audioPlayer;
@@ -72,6 +73,7 @@ public class InsertableYoutubePlayer implements
     private PlayerCallbacks mPlayerCallbacks;
 
 
+    // Конструкторы
     public InsertableYoutubePlayer(
             @NonNull Context context,
             @NonNull ViewGroup targetContainer,
@@ -113,16 +115,19 @@ public class InsertableYoutubePlayer implements
         );
     }
 
+
+    // View.OnClick
     @Override
     public void onClick(View v) {
         int viewId = v.getId();
 
-        if (R.id.playerControlButton == viewId) {
+        if (R.id.audioPlayerControlButton == viewId) {
             playPauseMedia();
         }
     }
 
 
+    // Внешние методы
     public void show(String videoId, @Nullable Float timecode, PlayerType playerType, PlayerCallbacks callbacks) {
         this.playerCallbacks = callbacks;
 
@@ -235,9 +240,9 @@ public class InsertableYoutubePlayer implements
         mYouTubePlayerView = player_layout.findViewById(R.id.youTubePlayerView);
 
         audioPlayer = player_layout.findViewById(R.id.audioPlayer);
-        playerControlButton = player_layout.findViewById(R.id.playerControlButton);
-        playerSeekBar = player_layout.findViewById(R.id.playerSeekBar);
-        playerStatusBar = player_layout.findViewById(R.id.playerStatusBar);
+        playerControlButton = player_layout.findViewById(R.id.audioPlayerControlButton);
+        playerSeekBar = player_layout.findViewById(R.id.audioPlayerSeekBar);
+        playerStatusBar = player_layout.findViewById(R.id.audioPlayerStatusBar);
 
         if (0 != targetContainer.getChildCount())
             targetContainer.removeViewAt(0);

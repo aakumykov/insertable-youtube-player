@@ -16,7 +16,9 @@
         android:textAlignment="center"
         android:textColor="@android:color/white"
         android:textSize="18sp"
-        android:visibility="gone" />
+        android:visibility="gone"
+        tools:text="Сообщение"
+        tools:visibility="visible" />
 
     <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
         android:id="@+id/youTubePlayerView"
@@ -24,7 +26,8 @@
         android:layout_height="wrap_content"
         android:visibility="gone"
         app:autoPlay="false"
-        app:enableAutomaticInitialization="false" />
+        app:enableAutomaticInitialization="false"
+        tools:visibility="visible" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/audioPlayer"
@@ -33,10 +36,11 @@
         android:background="@drawable/shape_audio_player"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
-        android:visibility="gone">
+        android:visibility="gone"
+        tools:visibility="visible">
 
         <ImageView
-            android:id="@+id/playerControlButton"
+            android:id="@+id/audioPlayerControlButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -48,17 +52,17 @@
             app:srcCompat="@drawable/ic_player_wait" />
 
         <SeekBar
-            android:id="@+id/playerSeekBar"
+            android:id="@+id/audioPlayerSeekBar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/playerControlButton"
+            app:layout_constraintStart_toEndOf="@+id/audioPlayerControlButton"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/playerStatusBar"
+            android:id="@+id/audioPlayerStatusBar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
@@ -66,8 +70,8 @@
             android:textAlignment="textEnd"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/playerControlButton"
-            app:layout_constraintTop_toBottomOf="@+id/playerSeekBar" />
+            app:layout_constraintStart_toEndOf="@+id/audioPlayerControlButton"
+            app:layout_constraintTop_toBottomOf="@+id/audioPlayerSeekBar" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
