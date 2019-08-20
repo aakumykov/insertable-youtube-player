@@ -49,7 +49,7 @@ public class InsertableYoutubePlayer implements
     }
 
     public interface iSeekListener {
-        void onSeek(float timecode);
+        void onSeek(float position);
     }
 
     public interface iEndListener {
