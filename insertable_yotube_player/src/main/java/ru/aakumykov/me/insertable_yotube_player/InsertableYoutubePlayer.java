@@ -77,36 +77,44 @@ public class InsertableYoutubePlayer implements
     private iSeekListener mSeekListener;
     private iEndListener mEndListener;
 
-    public void addOnAppearListener(iAppearListener appearListener) {
+    public InsertableYoutubePlayer addOnAppearListener(iAppearListener appearListener) {
         mAppearListener = appearListener;
+        return this;
     }
 
-    public void addOnReadyListener(iReadyListener readyListener ) {
+    public InsertableYoutubePlayer addOnReadyListener(iReadyListener readyListener ) {
         mReadyListener = readyListener;
+        return this;
     }
 
-    public void addOnErrorListener(iErrorListener errorListener) {
+    public InsertableYoutubePlayer addOnErrorListener(iErrorListener errorListener) {
         mErrorListener = errorListener;
+        return this;
     }
 
-    public void addOnPlayListener(iPlayListener playListener) {
+    public InsertableYoutubePlayer addOnPlayListener(iPlayListener playListener) {
         mPlayListener = playListener;
+        return this;
     }
 
-    public void addOnProgressListener(iProgressListener progressListener) {
+    public InsertableYoutubePlayer addOnProgressListener(iProgressListener progressListener) {
         mProgressListener = progressListener;
+        return this;
     }
 
-    public void addOnPauseListener(iPauseListener pauseListener) {
+    public InsertableYoutubePlayer addOnPauseListener(iPauseListener pauseListener) {
         mPauseListener = pauseListener;
+        return this;
     }
 
-    public void addOnSeekListener(iSeekListener seekListener) {
+    public InsertableYoutubePlayer addOnSeekListener(iSeekListener seekListener) {
         mSeekListener = seekListener;
+        return this;
     }
 
-    public void addOnEndListener(iEndListener endListener) {
+    public InsertableYoutubePlayer addOnEndListener(iEndListener endListener) {
         mEndListener = endListener;
+        return this;
     }
 
 
