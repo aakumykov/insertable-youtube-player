@@ -26,6 +26,8 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.You
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.ui.utils.TimeUtilities;
 
+// TODO: Android Lifecycle
+
 public class InsertableYoutubePlayer implements
         View.OnClickListener
 {
@@ -33,11 +35,80 @@ public class InsertableYoutubePlayer implements
         VIDEO_PLAYER, AUDIO_PLAYER
     }
 
-    public interface PlayerCallbacks {
-        void onReady();
-        void onError(String errorMsg);
+
+    public interface iPlayListener {
+        void onPlay();
+    }
+
+    public interface iProgressListener {
+        void onProgress(Float position, int percentage);
+    }
+
+    public interface iPauseListener {
+        void onPause();
+    }
+
+    public interface iSeekListener {
         void onSeek(float timecode);
     }
+
+    public interface iEndListener {
+        void onEnd();
+    }
+
+    public interface iAppearListener {
+        void onAppear();
+    }
+
+    public interface iReadyListener {
+        void onReady(Float duration);
+    }
+
+    public interface iErrorListener {
+        void onError(String errorMsg);
+    }
+
+    private iAppearListener mAppearListener;
+    private iReadyListener mReadyListener;
+    private iErrorListener mErrorListener;
+    private iPlayListener mPlayListener;
+    private iProgressListener mProgressListener;
+    private iPauseListener mPauseListener;
+    private iSeekListener mSeekListener;
+    private iEndListener mEndListener;
+
+    public void addOnAppearListener(iAppearListener appearListener) {
+        mAppearListener = appearListener;
+    }
+
+    public void addOnReadyListener(iReadyListener readyListener ) {
+        mReadyListener = readyListener;
+    }
+
+    public void addOnErrorListener(iErrorListener errorListener) {
+        mErrorListener = errorListener;
+    }
+
+    public void addOnPlayListener(iPlayListener playListener) {
+        mPlayListener = playListener;
+    }
+
+    public void addOnProgressListener(iProgressListener progressListener) {
+        mProgressListener = progressListener;
+    }
+
+    public void addOnPauseListener(iPauseListener pauseListener) {
+        mPauseListener = pauseListener;
+    }
+
+    public void addOnSeekListener(iSeekListener seekListener) {
+        mSeekListener = seekListener;
+    }
+
+    public void addOnEndListener(iEndListener endListener) {
+        mEndListener = endListener;
+    }
+
 
 
     private final static String TAG = "MyYoutubePlayer";
@@ -57,8 +128,8 @@ public class InsertableYoutubePlayer implements
     private TextView playerStatusBar;
 
     private PlayerConstants.PlayerState mMediaPlayerState;
-    private PlayerCallbacks mPlayerCallbacks;
     private boolean mSeekRequested = false;
+    private boolean mReady = false;
     private float mVideoDuration = 0.0f;
 
     private String mVideoId;
@@ -76,8 +147,9 @@ public class InsertableYoutubePlayer implements
 
             if (null != mVideoId) {
                 show(mVideoId, mTimecode, playerType);
-                if (null != mPlayerCallbacks)
-                    mPlayerCallbacks.onReady();
+
+                if (null != mAppearListener)
+                    mAppearListener.onAppear();
             }
         }
 
@@ -86,6 +158,21 @@ public class InsertableYoutubePlayer implements
             mMediaPlayerState = playerState;
             if (isAudioPlayer())
                 changePlayerControls(mMediaPlayerState);
+
+            switch (playerState) {
+
+                case PLAYING:
+                    if (null != mPlayListener) mPlayListener.onPlay();
+                    break;
+
+                case PAUSED:
+                    if (null != mPauseListener) mPauseListener.onPause();
+                    break;
+
+                case ENDED:
+                    if (null != mEndListener) mEndListener.onEnd();
+                    break;
+            }
         }
 
         @Override
@@ -101,13 +188,15 @@ public class InsertableYoutubePlayer implements
         @Override
         public void onError(@NonNull YouTubePlayer youTubePlayer, @NonNull PlayerConstants.PlayerError playerError) {
             showPlayerMsg(String.valueOf(playerError), false);
-            if (null != mPlayerCallbacks)
-                mPlayerCallbacks.onError(playerError.toString());
+            if (null != mErrorListener)
+                mErrorListener.onError(playerError.toString());
         }
 
         @Override
         public void onCurrentSecond(@NonNull YouTubePlayer youTubePlayer, float v) {
             moveSeekBar(v);
+            if (null != mProgressListener)
+                mProgressListener.onProgress(v, Math.round(100*(v/mVideoDuration)));
         }
 
         @Override
@@ -116,8 +205,14 @@ public class InsertableYoutubePlayer implements
 
             if (mSeekRequested) {
                 mSeekRequested = false;
-                if (null != mPlayerCallbacks)
-                    mPlayerCallbacks.onSeek(v);
+                if (null != mSeekListener)
+                    mSeekListener.onSeek(v);
+            }
+
+            if (!mReady) {
+                mReady = true;
+                if (null != mReadyListener)
+                    mReadyListener.onReady(v);
             }
         }
 
@@ -135,6 +230,8 @@ public class InsertableYoutubePlayer implements
         public void onApiChange(@NonNull YouTubePlayer youTubePlayer) {
 
         }
+
+
     };
 
 
@@ -193,12 +290,6 @@ public class InsertableYoutubePlayer implements
 
 
     // Внешние методы
-    public void show(String videoId, @Nullable Float timecode, PlayerType playerType, PlayerCallbacks callbacks) {
-        this.mPlayerCallbacks = callbacks;
-
-        show(videoId, timecode, playerType);
-    }
-
     public void show(String videoId, @Nullable Float timecode, PlayerType playerType) {
         this.mVideoId = videoId;
         this.mTimecode = (null == timecode) ? 0.0f : timecode;
