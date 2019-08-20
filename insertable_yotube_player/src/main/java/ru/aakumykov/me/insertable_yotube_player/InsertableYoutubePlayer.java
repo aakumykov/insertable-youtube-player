@@ -29,18 +29,14 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.ui.utils.TimeUtiliti
 public class InsertableYoutubePlayer implements
         View.OnClickListener
 {
-    public interface iMyYoutubePlayerCallbacks {
-        void onMediaAdded();
+    public enum PlayerType {
+        VIDEO_PLAYER, AUDIO_PLAYER
     }
 
     public interface PlayerCallbacks {
         void onReady();
         void onError(String errorMsg);
         void onSeek(float timecode);
-    }
-
-    public enum PlayerType {
-        VIDEO_PLAYER, AUDIO_PLAYER
     }
 
 
@@ -60,17 +56,86 @@ public class InsertableYoutubePlayer implements
     private SeekBar playerSeekBar;
     private TextView playerStatusBar;
 
-    private YouTubePlayerView mYouTubePlayerView;
-    private YouTubePlayer mYouTubePlayer;
     private PlayerConstants.PlayerState mMediaPlayerState;
-    private PlayerCallbacks playerCallbacks;
+    private PlayerCallbacks mPlayerCallbacks;
+    private boolean mSeekRequested = false;
+    private float mVideoDuration = 0.0f;
 
     private String mVideoId;
     private Float mTimecode;
 
-    private float mVideoDuration = 0.0f;
-    private boolean mSeekRequested = false;
-    private PlayerCallbacks mPlayerCallbacks;
+    private YouTubePlayerView mYouTubePlayerView;
+    private YouTubePlayer mYouTubePlayer;
+    private YouTubePlayerListener mYoutubePlayerListener = new YouTubePlayerListener() {
+
+        @Override
+        public void onReady(@NonNull YouTubePlayer youTubePlayer) {
+            InsertableYoutubePlayer.this.mYouTubePlayer = youTubePlayer;
+
+            hidePlayerMsg();
+
+            if (null != mVideoId) {
+                show(mVideoId, mTimecode, playerType);
+                if (null != mPlayerCallbacks)
+                    mPlayerCallbacks.onReady();
+            }
+        }
+
+        @Override
+        public void onStateChange(@NonNull YouTubePlayer youTubePlayer, @NonNull PlayerConstants.PlayerState playerState) {
+            mMediaPlayerState = playerState;
+            if (isAudioPlayer())
+                changePlayerControls(mMediaPlayerState);
+        }
+
+        @Override
+        public void onPlaybackQualityChange(@NonNull YouTubePlayer youTubePlayer, @NonNull PlayerConstants.PlaybackQuality playbackQuality) {
+
+        }
+
+        @Override
+        public void onPlaybackRateChange(@NonNull YouTubePlayer youTubePlayer, @NonNull PlayerConstants.PlaybackRate playbackRate) {
+
+        }
+
+        @Override
+        public void onError(@NonNull YouTubePlayer youTubePlayer, @NonNull PlayerConstants.PlayerError playerError) {
+            showPlayerMsg(String.valueOf(playerError), false);
+            if (null != mPlayerCallbacks)
+                mPlayerCallbacks.onError(playerError.toString());
+        }
+
+        @Override
+        public void onCurrentSecond(@NonNull YouTubePlayer youTubePlayer, float v) {
+            moveSeekBar(v);
+        }
+
+        @Override
+        public void onVideoDuration(@NonNull YouTubePlayer youTubePlayer, float v) {
+            mVideoDuration = v;
+
+            if (mSeekRequested) {
+                mSeekRequested = false;
+                if (null != mPlayerCallbacks)
+                    mPlayerCallbacks.onSeek(v);
+            }
+        }
+
+        @Override
+        public void onVideoLoadedFraction(@NonNull YouTubePlayer youTubePlayer, float v) {
+
+        }
+
+        @Override
+        public void onVideoId(@NonNull YouTubePlayer youTubePlayer, @NonNull String s) {
+
+        }
+
+        @Override
+        public void onApiChange(@NonNull YouTubePlayer youTubePlayer) {
+
+        }
+    };
 
 
     // Конструкторы
@@ -129,7 +194,7 @@ public class InsertableYoutubePlayer implements
 
     // Внешние методы
     public void show(String videoId, @Nullable Float timecode, PlayerType playerType, PlayerCallbacks callbacks) {
-        this.playerCallbacks = callbacks;
+        this.mPlayerCallbacks = callbacks;
 
         show(videoId, timecode, playerType);
     }
@@ -260,76 +325,7 @@ public class InsertableYoutubePlayer implements
 
         if (null == mYouTubePlayer) {
 
-            mYouTubePlayerView.initialize(new YouTubePlayerListener() {
-
-                @Override
-                public void onReady(@NonNull YouTubePlayer youTubePlayer) {
-                    InsertableYoutubePlayer.this.mYouTubePlayer = youTubePlayer;
-
-                    hidePlayerMsg();
-
-                    if (null != mVideoId) {
-                        show(mVideoId, mTimecode, playerType);
-                        if (null != playerCallbacks)
-                            playerCallbacks.onReady();
-                    }
-                }
-
-                @Override
-                public void onStateChange(@NonNull YouTubePlayer youTubePlayer, @NonNull PlayerConstants.PlayerState playerState) {
-                    mMediaPlayerState = playerState;
-                    if (isAudioPlayer())
-                        changePlayerControls(mMediaPlayerState);
-                }
-
-                @Override
-                public void onPlaybackQualityChange(@NonNull YouTubePlayer youTubePlayer, @NonNull PlayerConstants.PlaybackQuality playbackQuality) {
-
-                }
-
-                @Override
-                public void onPlaybackRateChange(@NonNull YouTubePlayer youTubePlayer, @NonNull PlayerConstants.PlaybackRate playbackRate) {
-
-                }
-
-                @Override
-                public void onError(@NonNull YouTubePlayer youTubePlayer, @NonNull PlayerConstants.PlayerError playerError) {
-                    showPlayerMsg(String.valueOf(playerError), false);
-                    if (null != playerCallbacks)
-                        playerCallbacks.onError(playerError.toString());
-                }
-
-                @Override
-                public void onCurrentSecond(@NonNull YouTubePlayer youTubePlayer, float v) {
-                    moveSeekBar(v);
-                }
-
-                @Override
-                public void onVideoDuration(@NonNull YouTubePlayer youTubePlayer, float v) {
-                    mVideoDuration = v;
-
-                    if (mSeekRequested) {
-                        mSeekRequested = false;
-                        if (null != mPlayerCallbacks)
-                            mPlayerCallbacks.onSeek(v);
-                    }
-                }
-
-                @Override
-                public void onVideoLoadedFraction(@NonNull YouTubePlayer youTubePlayer, float v) {
-
-                }
-
-                @Override
-                public void onVideoId(@NonNull YouTubePlayer youTubePlayer, @NonNull String s) {
-
-                }
-
-                @Override
-                public void onApiChange(@NonNull YouTubePlayer youTubePlayer) {
-
-                }
-            });
+            mYouTubePlayerView.initialize(mYoutubePlayerListener);
 
             mYouTubePlayerView.enableBackgroundPlayback(true);
         }
