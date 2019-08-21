@@ -139,6 +139,7 @@ public class InsertableYoutubePlayer implements
     private boolean mSeekRequested = false;
     private boolean mReady = false;
     private float mVideoDuration = 0.0f;
+    private float mVideoPosition = 0.0f;
 
     private String mVideoId;
     private Float mTimecode;
@@ -202,6 +203,7 @@ public class InsertableYoutubePlayer implements
 
         @Override
         public void onCurrentSecond(@NonNull YouTubePlayer youTubePlayer, float v) {
+            mVideoPosition = v;
             moveSeekBar(v);
             if (null != mProgressListener)
                 mProgressListener.onProgress(v, Math.round(100*(v/mVideoDuration)));
@@ -391,6 +393,10 @@ public class InsertableYoutubePlayer implements
 
     public float getDuration() {
         return this.mVideoDuration;
+    }
+
+    public float getPosition() {
+        return this.mVideoPosition;
     }
 
 
