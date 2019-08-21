@@ -385,10 +385,15 @@ public class InsertableYoutubePlayer implements
         return PlayerType.VIDEO_PLAYER.equals(playerType);
     }
 
-    public void seekTo(int decimalPositionPercent) {
+    public void seekTo(int positionPercentDecimal) {
         mSeekRequested = true;
         if (null != mYouTubePlayer)
-            mYouTubePlayer.seekTo(mVideoDuration * decimalPositionPercent / 100);
+            mYouTubePlayer.seekTo(mVideoDuration * positionPercentDecimal / 100);
+    }
+
+    public void seekTo(Float position) {
+        if (null != mYouTubePlayer)
+            mYouTubePlayer.seekTo(position);
     }
 
     public float getDuration() {
