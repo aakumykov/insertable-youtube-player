@@ -124,7 +124,7 @@ public class InsertableYoutubePlayer implements
     private Context context;
     private ViewGroup targetContainer;
     private PlayerType playerType;
-    private int waitingMessageId;
+    private Integer waitingMessageId;
     private int playIconId;
     private int pauseIconId;
     private int waitIconId;
@@ -249,7 +249,7 @@ public class InsertableYoutubePlayer implements
     public InsertableYoutubePlayer(
             @NonNull Context context,
             @NonNull ViewGroup targetContainer,
-            @NonNull Integer waitingMessageId,
+            @Nullable Integer waitingMessageId,
             @Nullable Integer playIconId,
             @Nullable Integer pauseIconId,
             @Nullable Integer waitIconId
@@ -259,7 +259,11 @@ public class InsertableYoutubePlayer implements
 
         this.context = context;
         this.targetContainer = targetContainer;
-        this.waitingMessageId = waitingMessageId;
+
+        this.waitingMessageId =
+                (null == waitingMessageId) ?
+                R.string.waiting_message_id :
+                waitingMessageId;
 
         this.playIconId = (null == playIconId) ? R.drawable.ic_player_play : playIconId;
         this.pauseIconId = (null == pauseIconId) ? R.drawable.ic_player_pause : pauseIconId;
@@ -287,6 +291,20 @@ public class InsertableYoutubePlayer implements
         );
     }
 
+    public InsertableYoutubePlayer(
+            @NonNull Context context,
+            @NonNull ViewGroup targetContainer
+    ) {
+        this(
+                context,
+                targetContainer,
+                null,
+                null,
+                null,
+                null
+        );
+    }
+
 
     // View.OnClick
     @Override
@@ -301,9 +319,16 @@ public class InsertableYoutubePlayer implements
 
     // Внешние методы
     public void show(String videoId, @Nullable Float timecode, PlayerType playerType) {
+        show(videoId, timecode, playerType, null);
+    }
+
+    public void show(String videoId, @Nullable Float timecode, PlayerType playerType, @Nullable Integer waitingMessageId) {
         this.mVideoId = videoId;
         this.mTimecode = (null == timecode) ? 0.0f : timecode;
         this.playerType = playerType;
+
+        if (null != waitingMessageId)
+            showPlayerMsg(waitingMessageId, true);
 
         if (null != mYouTubePlayer) {
 

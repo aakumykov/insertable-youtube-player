@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Встраиваемый Youtube-выигрыватель</string>
+    <string name="waiting_message_id">Подготовка выигрывателя</string>
+</resources>
