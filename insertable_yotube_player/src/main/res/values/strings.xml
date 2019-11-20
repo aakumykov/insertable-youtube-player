@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">Insertable_Yotube_Player</string>
+    <string name="app_name" translatable="false">Insertable_Yotube_Player</string>
     <string name="waiting_message_id">Preparing player</string>
 </resources>
