@@ -370,6 +370,13 @@ public class InsertableYoutubePlayer implements
             mYouTubePlayer.play();
     }
 
+    public void play(float fromPosition) {
+        if (null != mYouTubePlayer) {
+            mYouTubePlayer.seekTo(fromPosition);
+            mYouTubePlayer.play();
+        }
+    }
+
     public void release() {
         if (null != mYouTubePlayerView) {
             Utils.hide(mYouTubePlayerView);
