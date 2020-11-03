@@ -119,7 +119,7 @@ public class InsertableYoutubePlayer implements
 
 
 
-    private final static String TAG = "MyYoutubePlayer";
+    private final static String TAG = "InsertableYoutubePlayer";
 
     private Context context;
     private ViewGroup targetContainer;
