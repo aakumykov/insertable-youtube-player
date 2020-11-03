@@ -451,6 +451,10 @@ public class InsertableYoutubePlayer implements
         playerSeekBar = player_layout.findViewById(R.id.audioPlayerSeekBar);
         playerStatusBar = player_layout.findViewById(R.id.audioPlayerStatusBar);
 
+        player_layout.setLayoutParams(
+                new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        );
+
         if (0 != targetContainer.getChildCount())
             targetContainer.removeViewAt(0);
 
